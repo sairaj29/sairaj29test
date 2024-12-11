@@ -9,7 +9,7 @@ phases:
       - pip install awscli --upgrade
       - pip install bandit flake8
       - echo Building Docker Compose services...
-      - docker-compose build --verbose
+      
   pre_build:
     commands:
       - echo Starting Static Code Analysis...
