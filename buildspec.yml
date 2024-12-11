@@ -8,15 +8,19 @@ phases:
       - pip install --upgrade pip
       - pip install awscli --upgrade
       - pip install bandit flake8
-  build:
+  pre_build:
     commands:
+      - echo Starting Static Code Analysis...
       - flake8 backend/app.py  # Check for code styling issues
       - bandit -r backend      # Check for security vulnerabilities
+  build:
+    commands:
+      - echo Building Docker Compose services...
       - docker-compose build   # Build Docker Compose services
-      - docker-compose up -d
+      - docker-compose up -d   # Optional: Run services to validate
   post_build:
     commands:
-      - echo Build completed successfully
+      - echo Build and analysis completed successfully
 artifacts:
   files:
     - docker-compose.yml
