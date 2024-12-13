@@ -22,7 +22,10 @@ phases:
       - curl -L "https://github.com/docker/compose/releases/download/2.20.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
       - chmod +x /usr/local/bin/docker-compose
       - ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
-      - docker-compose --version
+      - echo 'export PATH=$PATH:/usr/local/bin' >> ~/.bashrc
+      - source ~/.bashrc
+      - echo "Checking Docker Compose version..."
+      - /usr/local/bin/docker-compose --version
       - echo "Installing Python packages..."
       - pip install bandit flake8
       - docker info
@@ -36,7 +39,7 @@ phases:
   build:
     commands:
       - echo "Building Docker Compose services..."
-      - docker-compose build | tee build.log
+      - /usr/local/bin/docker-compose build | tee build.log
       - echo "Tagging Docker images for ECR..."
       - docker tag backend:latest public.ecr.aws/i4a2a9c3/sairaj29test:backend-latest
       - docker tag frontend:latest public.ecr.aws/i4a2a9c3/sairaj29test:frontend-latest
