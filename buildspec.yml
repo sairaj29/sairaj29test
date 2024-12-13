@@ -8,6 +8,7 @@ phases:
       - echo "Installing dependencies..."
       - |
         curl -I https://google.com || { echo "Network issue detected"; exit 1; }
+      - yum clean all
       - yum update -y
       - yum install -y curl
       - curl -L "https://github.com/docker/compose/releases/download/2.20.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
