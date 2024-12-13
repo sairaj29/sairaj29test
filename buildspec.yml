@@ -22,8 +22,8 @@ phases:
       - curl -L "https://github.com/docker/compose/releases/download/2.20.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
       - chmod +x /usr/local/bin/docker-compose
       - ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
-      - echo 'export PATH=$PATH:/usr/local/bin' >> ~/.bashrc
-      - source ~/.bashrc
+      - echo "Setting PATH..."
+      - export PATH=$PATH:/usr/local/bin
       - echo "Checking Docker Compose version..."
       - /usr/local/bin/docker-compose --version
       - echo "Installing Python packages..."
