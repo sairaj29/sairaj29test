@@ -19,9 +19,8 @@ phases:
           echo "docker-compose is already installed.";
         fi
       - pip install bandit flake8
-      - docker-compose version
-      - service docker start
-      - docker info
+      - sudo systemctl start docker
+      - sudo docker info
 
   pre_build:
     commands:
