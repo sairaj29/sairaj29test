@@ -14,12 +14,10 @@ phases:
       - yum update -y || true
       - echo "Checking Docker installation..."
       - sudo docker --version || (sudo yum install -y docker || sudo apt-get install -y docker.io)
-      - echo "Starting Docker service..."
-      - sudo systemctl start docker
-      - echo "Enabling Docker service to start on boot..."
-      - sudo systemctl enable docker
-      - echo "Checking Docker service status..."
-      - sudo systemctl status docker || sudo journalctl -xeu docker.service
+      - echo "Starting Docker daemon..."
+      - nohup sudo dockerd > /dev/null 2>&1 &
+      - while(! sudo docker info > /dev/null 2>&1); do echo "Waiting for Docker to start..."; sleep 1; done
+      - echo "Docker installed and started successfully."
       - echo "Installing Docker Compose..."
       - curl -L "https://github.com/docker/compose/releases/download/2.20.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
       - chmod +x /usr/local/bin/docker-compose
