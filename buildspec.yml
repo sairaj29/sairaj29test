@@ -1,31 +1,42 @@
 version: 0.2
+
 phases:
   install:
     runtime-versions:
       python: 3.10
     commands:
-      - echo Installing dependencies...
-      - pip install --upgrade pip
-      - pip install awscli --upgrade
-      - pip install bandit flake8
-      - echo Building Docker Compose services...
-      
+      - echo "Installing dependencies..."
+      - apt-get update && apt-get install -y curl
+      - curl -L "https://github.com/docker/compose/releases/download/2.20.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+      - chmod +x /usr/local/bin/docker-compose
+      - ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+      - docker-compose version
+      - service docker start
+      - docker info
+
   pre_build:
     commands:
-      - echo Starting Static Code Analysis...
-      - flake8 backend/app.py  # Check for code styling issues
-      - bandit -r backend      # Check for security vulnerabilities
+      - echo "Running Static Code Analysis..."
+      - flake8 backend/app.py
+      - bandit -r backend
+
   build:
     commands:
-      - echo Building Docker Compose services...
-      - df -h
-      - docker-compose build || echo "Docker Compose Build Failed" && exit 1  # Build Docker Compose services
-      - docker-compose up -d   # Optional: Run services to validate
+      - echo "Building Docker Compose services..."
+      - docker-compose build
+      - echo "Tagging Docker images for ECR..."
+      - docker tag backend:latest public.ecr.aws/i4a2a9c3/sairaj29test:backend-latest
+      - docker tag frontend:latest public.ecr.aws/i4a2a9c3/sairaj29test:frontend-latest
+      - echo "Pushing Docker images to ECR..."
+      - docker push public.ecr.aws/i4a2a9c3/sairaj29test:backend-latest
+      - docker push public.ecr.aws/i4a2a9c3/sairaj29test:frontend-latest
+
   post_build:
     commands:
-      - echo Build and analysis completed successfully
+      - echo "Build and push to ECR completed successfully."
+
 artifacts:
   files:
     - docker-compose.yml
-    - frontend/**/*
     - backend/**/*
+    - frontend/**/*
