@@ -28,13 +28,13 @@ phases:
   build:
     commands:
       - echo "Building Docker Compose services..."
-      - docker-compose build
+      - docker-compose build | tee build.log
       - echo "Tagging Docker images for ECR..."
       - docker tag backend:latest public.ecr.aws/i4a2a9c3/sairaj29test:backend-latest
       - docker tag frontend:latest public.ecr.aws/i4a2a9c3/sairaj29test:frontend-latest
       - echo "Pushing Docker images to ECR..."
-      - docker push public.ecr.aws/i4a2a9c3/sairaj29test:backend-latest
-      - docker push public.ecr.aws/i4a2a9c3/sairaj29test:frontend-latest
+      - docker push public.ecr.aws/i4a2a9c3/sairaj29test:backend-latest | tee -a build.log
+      - docker push public.ecr.aws/i4a2a9c3/sairaj29test:frontend-latest | tee -a build.log
 
   post_build:
     commands:
