@@ -5,22 +5,29 @@ phases:
     runtime-versions:
       python: 3.10
     commands:
-      - echo "Installing dependencies..."
+      - echo "Checking network connectivity..."
       - |
         curl -I https://google.com || { echo "Network issue detected"; exit 1; }
+      - echo "Cleaning up yum cache..."
       - yum clean all
+      - echo "Updating yum packages..."
       - yum update -y || true
-      - if ! command -v docker-compose &> /dev/null; then
-          echo "Installing docker-compose from source...";
-          curl -L "https://github.com/docker/compose/releases/download/2.20.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose;
-          chmod +x /usr/local/bin/docker-compose;
-          ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose;
-        else
-          echo "docker-compose is already installed.";
-        fi
-      - pip install bandit flake8
+      - echo "Checking Docker installation..."
+      - sudo docker --version || (sudo yum install -y docker || sudo apt-get install -y docker.io)
+      - echo "Starting Docker service..."
       - sudo systemctl start docker
-      - sudo docker info
+      - echo "Enabling Docker service to start on boot..."
+      - sudo systemctl enable docker
+      - echo "Checking Docker service status..."
+      - sudo systemctl status docker || sudo journalctl -xeu docker.service
+      - echo "Installing Docker Compose..."
+      - curl -L "https://github.com/docker/compose/releases/download/2.20.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+      - chmod +x /usr/local/bin/docker-compose
+      - ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+      - docker-compose --version
+      - echo "Installing Python packages..."
+      - pip install bandit flake8
+      - docker info
 
   pre_build:
     commands:
